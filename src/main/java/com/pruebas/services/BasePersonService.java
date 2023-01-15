@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.pruebas.model.domain.Person;
 
-
 public interface BasePersonService<Entity> 
 {
 	

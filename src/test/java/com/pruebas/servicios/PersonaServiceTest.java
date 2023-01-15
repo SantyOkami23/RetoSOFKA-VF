@@ -23,6 +23,7 @@ import com.pruebas.exception.PersonNotFoundException;
 import com.pruebas.model.domain.Person;
 import com.pruebas.model.entity.PersonEntity;
 import com.pruebas.repositories.PersonDAO;
+import com.pruebas.services.ImageService;
 import com.pruebas.services.PersonService;
 
 
@@ -31,6 +32,8 @@ class PersonaServiceTest
 {
 	@Mock //objeto mock que va a ser crado por mockito 
 	private PersonDAO personRepository;
+	@Mock
+	private ImageService imageService;
 	@InjectMocks  //mocks que van a ser inyectados 
 	private PersonService personService;
 	
@@ -67,6 +70,7 @@ class PersonaServiceTest
 	void getPeople()
 	{
 		 when(personRepository.findAll()).thenReturn(Collections.singletonList(personEntity));
+		 when(imageService.getBase(any())).thenReturn(person.getFoto());
 
 	     List<Person> People = personService.getPeople();
 
@@ -132,6 +136,14 @@ class PersonaServiceTest
         when(personRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(PersonNotFoundException.class,() -> personService.deletePerson(1));
+	}
+	
+	@Test
+    void getPersonsAge() 
+	{
+
+        when(personRepository.findByEdadGreaterThanEqual(anyInt())).thenReturn(Collections.singletonList(personEntity));
+        assertNotNull(personRepository.findByEdadGreaterThanEqual(anyInt()));
 	}
 	
 	

@@ -2,6 +2,7 @@ package com.pruebas.services;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import com.pruebas.exception.PersonNotFoundException;
 import com.pruebas.model.domain.Image;
 import com.pruebas.model.entity.ImageEntity;
 import com.pruebas.repositories.ImageDAO;
-
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class ImageService implements BaseImgService<Image>
 	@Override
 	public ResponseEntity<Image> getImagen(Integer id) 
 	{
-		log.debug("Cargando Imagen");
+		log.debug("Loading Image");
 		ImageEntity imageEntity = imageRepository.findById(personService.getImageId(id).getBody()).orElseThrow(() -> new PersonNotFoundException("La  imagen no existe."));
         return ResponseEntity.ok(modelMapper.map(imageEntity, Image.class));
 	}
@@ -52,7 +52,7 @@ public class ImageService implements BaseImgService<Image>
 		
         if(imageId == "null")
         {
-        	log.debug("Guardando imagen");
+        	log.debug("Saving Image");
             ImageEntity imageEntity = new ImageEntity();
             imageEntity.setTipoImagen(image.getContentType());
             imageEntity.setImagen(Base64.getEncoder().encodeToString(image.getBytes()));
@@ -73,7 +73,7 @@ public class ImageService implements BaseImgService<Image>
 		 String imageId = personService.getImageId(id).getBody();
 	        if(imageId != "null")
 	        {
-	        	log.debug("Eliminando Imagen");
+	        	log.debug("Deleting Image");
 	            imageRepository.deleteById(imageId);
 	            personService.assignImageId(id, null);
 	            return ResponseEntity.ok(true);
@@ -91,7 +91,7 @@ public class ImageService implements BaseImgService<Image>
 		String imageId = personService.getImageId(id).getBody();
 		
         if(imageId != "null"){
-        	log.debug("Actualizando Imagen");
+        	log.debug("Updating Image");
             ImageEntity imageEntity = imageRepository.findById(imageId).get();
             imageEntity.setImagen(Base64.getEncoder().encodeToString(imagen.getBytes()));
             imageRepository.save(imageEntity);
@@ -102,5 +102,12 @@ public class ImageService implements BaseImgService<Image>
         }
 		
 	}
+	
+	public String getBase(String id) 
+	{
+		Optional<ImageEntity> img = imageRepository.findById(id);
+		return img.get().getImagen();
+	}
+		
 	
 }

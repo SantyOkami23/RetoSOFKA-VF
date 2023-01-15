@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "personas")
+@RequestMapping(path = "persons")
 @AllArgsConstructor
 public class PersonRest
 {
@@ -30,35 +30,41 @@ public class PersonRest
    @Autowired
    private PersonService personService;
 
-   @Operation(summary = "Obtener listado de todos los objetos persona")
+   
+   
+   @Operation(summary = "Get list of all person objects")
    @GetMapping()
    public ResponseEntity<?> getAll()
-   {
-	     try 
-	     {
-	        return ResponseEntity.status(HttpStatus.OK).body(personService.getPeople());
-	     } catch (Exception e) 
-	     {
-	       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor intente mas tarde.\"}");
-	     }
+   {   
+	 return ResponseEntity.status(HttpStatus.OK).body(personService.getPeople()); 
    }
    
-   @Operation(summary = "Obtener un objeto persona mediante un Id de identificacion")
+   
+   
+   @Operation(summary = "Get a person object by means of an identification Id")
    @GetMapping("/{id}")
    public ResponseEntity<Person> getPerson(@PathVariable("id") Integer id)
    {
 	   Person entity = personService.getPersonById(id);
 	   
-	   if(entity == null)
-	   {
+	   if(entity == null){
 		   return ResponseEntity.notFound().build();
-	   }else 
-	   {
+	   }else {
 		   return ResponseEntity.ok(entity);
 	   }
-   }  
+   } 
+   
+   
+   
+    @Operation(summary = "get a list of person objects greater than age")
+    @GetMapping("age/{age}")
+	public ResponseEntity<?> getPersonsGreater(@PathVariable Integer age) throws Exception
+    {
+		return ResponseEntity.status(HttpStatus.OK).body(personService.getPersonsAge(age));
+	}
+   
 
-   @Operation(summary = "Guardar un objeto persona")
+   @Operation(summary = "Save a person object")
    @PostMapping()
    public ResponseEntity<?> savePerson(@RequestBody @Valid Person entity) throws Exception
    {
@@ -66,7 +72,7 @@ public class PersonRest
    }
 
   
-   @Operation(summary = "Actualizar un objeto persona")
+   @Operation(summary = "Update a person object")
    @PutMapping("/{id}")
    public ResponseEntity<Person> updatePerson(@PathVariable("id") Integer id, @RequestBody @Valid Person entity)
    {
@@ -80,18 +86,10 @@ public class PersonRest
 	   }
    }
   
-   @Operation(summary = "Borrar un objeto persona")
+   @Operation(summary = "Delete a person object")
    @DeleteMapping("/{id}")
-   public ResponseEntity<?> deletePerson(@PathVariable("id") Integer id)
+   public ResponseEntity<?> deletePerson(@PathVariable("id") Integer id) throws Exception
    {
-	    try 
-	    {
 	      return ResponseEntity.status(HttpStatus.OK).body(personService.deletePerson(id));    
-	    } catch (Exception e) 
-	    {
-	      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente mas tarde.\"}");
-	    }
-
    }
-
 }
